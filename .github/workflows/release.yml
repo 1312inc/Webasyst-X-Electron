@@ -1,0 +1,68 @@
+name: Build
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  release:
+    runs-on: ${{ matrix.os }}
+
+    strategy:
+      matrix:
+        os: [macos-latest, windows-latest]
+
+    steps:
+      - name: Check out Git repository
+        uses: actions/checkout@v2
+
+      - name: Install Node.js
+        uses: actions/setup-node@v1
+        with:
+          node-version: 16
+      
+      - name: Add MacOS certs
+        if: matrix.os == 'macos-latest'
+        run: chmod +x add-osx-cert.sh && ./add-osx-cert.sh
+        env:
+          CERTIFICATE_OSX_APPLICATION: ${{ secrets.APPLE_DEVELOPER_ID_APPLICATION_CERT_BASE64 }}
+          CERTIFICATE_PASSWORD: ${{ secrets.APPLE_DEVELOPER_ID_APPLICATION_CERT_PASSWORD }}
+      
+      - name: Add Windows certificate
+        if: matrix.os == 'windows-latest'
+        id: write_file
+        uses: timheuer/base64-to-file@v1
+        with:
+          fileName: 'win-certificate.pfx'
+          encodedString: ${{ secrets.CERTIFICATE_WINDOWS_PFX }}
+      
+      - name: Add app.config.js
+        uses: RollyPeres/base64-to-path@v1
+        with:
+          filePath: ${{ github.workspace }}/app.config.js
+          encodedString: ${{ secrets.APP_CONFIG_JS_BASE64 }}
+
+      - name: install dependencies
+        run: npm install
+
+      - name: build
+        run: npm run make
+        env:
+          APPLE_APPLEID: ${{ secrets.APPLE_APPLEID }}
+          APPLE_APPLEID_PASSWORD: ${{ secrets.APPLE_APPLEID_PASSWORD }}
+          APPLE_TEAM_SHORT_NAME: ${{ secrets.APPLE_TEAM_SHORT_NAME }}
+          APPLE_APP_BUNDLE_ID: ${{ secrets.APPLE_APP_BUNDLE_ID }}
+          WINDOWS_PFX_FILE: ${{ steps.write_file.outputs.filePath }}
+          WINDOWS_PFX_PASSWORD: ${{ secrets.CERTIFICATE_WINDOWS_PFX_PASSWORD }}
+
+      - name: Release
+        uses: softprops/action-gh-release@v1
+        if: startsWith(github.ref, 'refs/tags/')
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          files: |
+            out/**/*.dmg
+            out/**/*Setup.exe
+            out/**/*.zip

@@ -1,0 +1,10 @@
+module.exports = {
+  waidClientId: '3c56c9a...5456dc7c',
+  waidRequestScopes: 'token:cash.blog.photos.webasyst.installer',
+  devServerHost: 'http://localhost:8080',
+  appName: 'Webasyst X',
+  apiClientId: 'com.webasyst.boilerplate.electron',
+  cloudBundle: 'allinclusive',
+  cloudPlanId: 'TRIAL',
+  sidebarBackgroundColor: '#333'
+}
