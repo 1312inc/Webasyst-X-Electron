@@ -15,6 +15,8 @@ containing a set of methods and properties to use.
 
 Each time you select an installation in the sidebar, the renderer process launches the user's app in the BrowserView, passing information about the installation to it.
 
+> The renderer process app has its own repo. [Take a look](https://github.com/1312inc/Webasyst-X-Electron-Renderer)
+
 ### User's app ([app](/app) dir)
 Location of your application. SPA running in the BrowserView is called within the Renderer process.
 
