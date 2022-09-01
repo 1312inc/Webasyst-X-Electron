@@ -9,7 +9,7 @@
     "package": "electron-forge package",
     "make": "electron-forge make"
   },
-  "author": "Konstantin Zaytsev <zaytsev.const@gmail.com> (https://github.com/constzaytsev)",
+  "author": "Webasyst LLC",
   "license": "ISC",
   "devDependencies": {
     "@babel/core": "^7.16.5",
